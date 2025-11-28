@@ -2,33 +2,38 @@ import streamlit as st
 from fpdf import FPDF
 import os
 from dotenv import load_dotenv
-import google.generativeai as genai
+import openai
 
-  # Load environment variables from .env file
+# Load environment variables from .env file
 load_dotenv()
 
-  # --- Agent Functions (Optimized AI) ---
+# --- Agent Functions (Optimized AI) ---
 
 @st.cache_data
 def run_llm_prompt(prompt):
-      """
-      Runs a prompt through the Gemini API and returns the response.
-      """
-      api_key = os.getenv("GEMINI_API_KEY")
-      if not api_key or api_key == "YOUR_API_KEY_HERE":
-          st.error("API Key not found! Please add your key to the .env file.")
-          return "Error: API Key not configured."
+    """
+    Runs a prompt through the OpenAI API and returns the response.
+    """
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key or api_key == "YOUR_API_KEY_HERE":
+        st.error("API Key not found! Please add your key to the .env file.")
+        return "Error: API Key not configured."
 
-      try:
-          genai.configure(api_key=api_key)
-          model = genai.GenerativeModel('gemini-1.5-pro-latest')
-          response = model.generate_content(prompt)
-          return response.text.strip()
+    try:
+        openai.api_key = api_key
+        response = openai.Completion.create(
+            model="gpt-3.5-turbo",
+            prompt=prompt,
+            max_tokens=1024,
+            n=1,
+            stop=None,
+            temperature=0.7,
+        )
+        return response.choices[0].text.strip()
 
-      except Exception as e:
-          st.error(f"An error occurred with the API call: {e}")
-          return f"Error: {e}"
-
+    except Exception as e:
+        st.error(f"An error occurred with the API call: {e}")
+        return f"Error: {e}"
 def generate_letter_agent(purpose, recipient, details, tone):
       """
       Generates a complete letter by combining research and writing into one prompt.
