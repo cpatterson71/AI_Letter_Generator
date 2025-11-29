@@ -17,15 +17,15 @@ def run_llm_prompt(prompt):
 
     try:
         openai.api_key = api_key
-        response = openai.Completion.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            prompt=prompt,
+            messages=[{"role": "user", "content": prompt}], # Changed prompt format for chat models
             max_tokens=1024,
             n=1,
             stop=None,
             temperature=0.7,
         )
-        return response.choices[0].text.strip()
+        return response.choices[0].message.content.strip() # Changed response extraction
 
     except Exception as e:
         st.error(f"An error occurred with the API call: {e}")
