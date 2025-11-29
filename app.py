@@ -1,11 +1,7 @@
 import streamlit as st
 from fpdf import FPDF
 import os
-from dotenv import load_dotenv
 import openai
-
-# Load environment variables from .env file
-load_dotenv()
 
 # --- Agent Functions (Optimized AI) ---
 
@@ -14,9 +10,9 @@ def run_llm_prompt(prompt):
     """
     Runs a prompt through the OpenAI API and returns the response.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = st.secrets["OPENAI_API_KEY"]
     if not api_key or api_key == "YOUR_API_KEY_HERE":
-        st.error("API Key not found! Please add your key to the .env file.")
+        st.error("API Key not found! Please add your key to the Streamlit secrets.")
         return "Error: API Key not configured."
 
     try:
